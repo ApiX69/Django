@@ -1,0 +1,58 @@
+{% extends "accounts/base_custom.html" %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="height: 70vh;">
+    <div class="card shadow p-4 rounded-4 animate__animated animate__fadeInDown" style="min-width: 350px; max-width: 500px; width: 100%;">
+        <h2 class="mb-4 text-center fw-bold">Sign Up</h2>
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold">{{ form.username.label }}</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold">{{ form.email.label }}</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.department.id_for_label }}" class="form-label fw-semibold">{{ form.department.label }}</label>
+                {{ form.department }}
+                {% if form.department.errors %}
+                    <div class="text-danger small mt-1">{{ form.department.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.password1.id_for_label }}" class="form-label fw-semibold">{{ form.password1.label }}</label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                    <div class="text-danger small mt-1">{{ form.password1.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.cin.id_for_label }}" class="form-label fw-semibold">{{ form.cin.label }}</label>
+                {{ form.cin }}
+                {% if form.cin.errors %}
+                    <div class="text-danger small mt-1">{{ form.cin.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.password2.id_for_label }}" class="form-label fw-semibold">{{ form.password2.label }}</label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                    <div class="text-danger small mt-1">{{ form.password2.errors }}</div>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary w-100 btn-lg fw-semibold shadow-sm animate__animated animate__pulse animate__infinite animate__slow">Sign Up</button>
+        </form>
+        <p class="mt-3 text-center">Already have an account? <a href="{% url 'login' %}" class="text-decoration-none fw-semibold">Login here</a>.</p>
+    </div>
+</div>
+{% endblock %}

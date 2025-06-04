@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Confirm Delete Trip Request</h2>
+    <p>Are you sure you want to delete this trip request?</p>
+    <ul>
+        <li>Vehicle: {{ trip_request.vehicle }}</li>
+        <li>Mission: {{ trip_request.mission }}</li>
+        <li>Date Going: {{ trip_request.date_going }}</li>
+        <li>Date Coming Back: {{ trip_request.date_coming_back }}</li>
+        <li>Motif: {{ trip_request.motif }}</li>
+        <li>Status: {{ trip_request.status }}</li>
+    </ul>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'trip_request_employee_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

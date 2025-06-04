@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Service Task Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Service Task Details</h2>
+    <table class="table table-bordered">
+        <tr>
+            <th>Vehicle</th>
+            <td>{{ service_task.vehicle }}</td>
+        </tr>
+        <tr>
+            <th>Mission</th>
+            <td>{{ service_task.mission }}</td>
+        </tr>
+        <tr>
+            <th>Date Going</th>
+            <td>{{ service_task.date_going }}</td>
+        </tr>
+        <tr>
+            <th>Date Coming Back</th>
+            <td>{{ service_task.date_coming_back }}</td>
+        </tr>
+        <tr>
+            <th>Destination</th>
+            <td>{{ service_task.destination }}</td>
+        </tr>
+        <tr>
+            <th>Driver</th>
+            <td>{{ service_task.driver }}</td>
+        </tr>
+        <tr>
+            <th>Fuel Used</th>
+            <td>{{ service_task.fuel_used }}</td>
+        </tr>
+        <tr>
+            <th>Motif</th>
+            <td>{{ service_task.motif|linebreaksbr }}</td>
+        </tr>
+    </table>
+    <a href="{% url 'service_task_list' %}" class="btn btn-secondary">Back to List</a>
+</div>
+{% endblock %}

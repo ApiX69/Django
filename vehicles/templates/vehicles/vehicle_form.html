@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow p-4 rounded-4 animate__animated animate__fadeInDown" style="max-width: 700px; margin: auto;">
+        <h2 class="mb-4 text-center fw-bold">{% if form.instance.pk %}Edit Vehicle{% else %}Add Vehicle{% endif %}</h2>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.model.label_tag }}
+                {{ form.model }}
+            </div>
+            <div class="mb-3">
+                {{ form.year.label_tag }}
+                {{ form.year }}
+            </div>
+            <div class="mb-3">
+                {{ form.license_plate.label_tag }}
+                {{ form.license_plate }}
+            </div>
+            {% if form.instance.pk %}
+            <div class="mb-3">
+                {{ form.status.label_tag }}
+                {{ form.status }}
+            </div>
+            {% endif %}
+            <div class="mb-3">
+                {{ form.horsepower.label_tag }}
+                {{ form.horsepower }}
+            </div>
+            <div class="mb-3">
+                {{ form.fuel_type.label_tag }}
+                {{ form.fuel_type }}
+            </div>
+            <div class="mb-3">
+                {{ form.mileage.label_tag }}
+                {{ form.mileage }}
+            </div>
+            <div class="mb-3">
+                {{ form.date_bought.label_tag }}
+                {{ form.date_bought }}
+            </div>
+            <button type="submit" class="btn btn-primary w-100 btn-lg fw-semibold shadow-sm">Save</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

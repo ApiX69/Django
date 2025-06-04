@@ -1,0 +1,10 @@
+{
+  "name": "vehicleManagement",
+  "version": "1.0.0",
+  "scripts": {
+    "build:css": "tailwindcss -i ./assets/css/tailwind.css -o ./static/css/tailwind.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.3.2"
+  }
+}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="w-full mt-4 px-4">
+    <div class="card shadow p-4 rounded-4 animate__animated animate__fadeInDown">
+        <h2 class="mb-4 fw-bold">Vehicle Models</h2>
+        <a href="{% url 'vehicle_model_add' %}" class="btn btn-primary btn-lg mb-3 animate__animated animate__pulse animate__infinite animate__slow">Add Vehicle Model</a>
+        <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
+            <table class="table table-striped align-middle" style="table-layout: fixed; width: 100%;">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for model in models %}
+                    <tr class="align-middle">
+                        <td class="px-3 py-2">{{ model.name }}</td>
+                        <td class="px-3 py-2">
+                            <a href="{% url 'vehicle_model_edit' model.pk %}" class="btn btn-sm btn-warning me-1">Edit</a>
+                            <a href="{% url 'vehicle_model_delete' model.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center">No vehicle models found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

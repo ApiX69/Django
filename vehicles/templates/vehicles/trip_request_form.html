@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow p-4 rounded-4 animate__animated animate__fadeInDown" style="max-width: 700px; margin: auto;">
+        <h2 class="mb-4 text-center fw-bold">Request a Mission</h2>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_mission" class="form-label fw-semibold">Mission:</label>
+                {{ form.mission }}
+            </div>
+            <div class="mb-3">
+                <label for="id_date_going" class="form-label fw-semibold">Date Going:</label>
+                {{ form.date_going }}
+            </div>
+            <div class="mb-3">
+                <label for="id_date_coming_back" class="form-label fw-semibold">Date Coming Back:</label>
+                {{ form.date_coming_back }}
+            </div>
+            <div class="mb-3">
+                <label for="id_destination" class="form-label fw-semibold">Destination:</label>
+                {{ form.destination }}
+            </div>
+            <div class="mb-3">
+                <label for="id_motif" class="form-label fw-semibold">Motif:</label>
+                {{ form.motif }}
+            </div>
+            <button type="submit" class="btn btn-primary w-100 btn-lg fw-semibold shadow-sm">Submit Request</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

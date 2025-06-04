@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Delete Service Task{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Confirm Delete Service Task</h2>
+    <p>Are you sure you want to delete the service task for vehicle <strong>{{ service_task.vehicle }}</strong> scheduled from <strong>{{ service_task.date_going }}</strong> to <strong>{{ service_task.date_coming_back }}</strong>?</p>
+    <form method="post">
+        {% csrf_token %}
+        <a href="{% url 'service_task_list' %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+</div>
+{% endblock %}

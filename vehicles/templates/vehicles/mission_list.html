@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Mission List{% endblock %}
+
+{% block content %}
+<div class="w-full mt-4 px-4">
+    <div class="card shadow p-4 rounded-4 animate__animated animate__fadeInDown">
+        <h2 class="mb-4 fw-bold">Mission List</h2>
+        <a href="{% url 'mission_add' %}" class="btn btn-primary btn-lg mb-3 animate__animated animate__pulse animate__infinite animate__slow">Add Mission</a>
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Mission Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mission in missions %}
+                    <tr class="align-middle">
+                        <td>{{ mission.mission_type }}</td>
+                        <td>
+                            <a href="{% url 'mission_edit' mission.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                            <a href="{% url 'mission_delete' mission.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center">No missions available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

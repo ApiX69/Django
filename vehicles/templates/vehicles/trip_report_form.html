@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Trip Report for {{ trip_request }}</h2>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="form-group">
+            {{ form.report_text.label_tag }}
+            {{ form.report_text }}
+            {{ form.report_text.errors }}
+        </div>
+        <div class="form-group">
+            {{ form.new_mileage.label_tag }}
+            {{ form.new_mileage }}
+            {{ form.new_mileage.errors }}
+        </div>
+        <!-- Removed fuel_filled field as it is managed by manager approval -->
+        <!--
+        <div class="form-group">
+            {{ form.fuel_filled.label_tag }}
+            {{ form.fuel_filled }}
+            {{ form.fuel_filled.errors }}
+        </div>
+        -->
+        <div class="form-group">
+            {{ form.issue_occurred.label_tag }}
+            {{ form.issue_occurred }}
+            {{ form.issue_occurred.errors }}
+        </div>
+        <div class="form-group" id="issue_detail_group" style="display:none;">
+            {{ form.issue_detail.label_tag }}
+            {{ form.issue_detail }}
+            {{ form.issue_detail.errors }}
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Report</button>
+        <a href="{% url 'trip_request_employee_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const issueOccurredCheckbox = document.querySelector('input[name="issue_occurred"]');
+    const issueDetailGroup = document.getElementById('issue_detail_group');
+
+    function toggleIssueDetail() {
+        if (issueOccurredCheckbox.checked) {
+            issueDetailGroup.style.display = 'block';
+        } else {
+            issueDetailGroup.style.display = 'none';
+        }
+    }
+
+    issueOccurredCheckbox.addEventListener('change', toggleIssueDetail);
+
+    // Initialize on page load
+    toggleIssueDetail();
+
+    // Show popup alert if there are form errors
+    const formErrors = document.querySelectorAll('.errorlist');
+    if (formErrors.length > 0) {
+        let errorMessages = '';
+        formErrors.forEach(errorList => {
+            errorMessages += errorList.innerText + '\\n';
+        });
+        alert('Form submission errors:\\n' + errorMessages);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Service Tasks{% endblock %}
+
+{% block content %}
+<div class="w-full mt-4 px-4">
+    <div class="card shadow p-4 rounded-4 animate__animated animate__fadeInDown">
+        <h2 class="mb-4 fw-bold">Service Tasks</h2>
+        <div class="mb-3">
+            <a href="{% url 'service_task_create' %}" class="btn btn-primary">Add New Service Task</a>
+        </div>
+        {% if service_tasks %}
+        <div class="table-responsive">
+            <table class="table table-striped align-middle" style="table-layout: fixed; width: 100%;">
+                <thead class="table-light">
+                    <tr>
+                        <th>Vehicle</th>
+                        <th>Mission</th>
+                        <th>Date Going</th>
+                        <th>Date Coming Back</th>
+                        <th>Destination</th>
+                        <th>Driver</th>
+                        <th>Fuel Used</th>
+                        <th>Motif</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in service_tasks %}
+                    <tr>
+                        <td class="px-3 py-2">{{ task.vehicle }}</td>
+                        <td class="px-3 py-2">{{ task.mission }}</td>
+                        <td class="px-3 py-2">{{ task.date_going }}</td>
+                        <td class="px-3 py-2">{{ task.date_coming_back }}</td>
+                        <td class="px-3 py-2">{{ task.destination }}</td>
+                        <td class="px-3 py-2">{{ task.driver }}</td>
+                        <td class="px-3 py-2">{{ task.fuel_used }}</td>
+                        <td class="px-3 py-2">{{ task.motif|linebreaksbr }}</td>
+                        <td class="px-3 py-2">
+                            {% now "Y-m-d" as today %}
+                            {% if task.date_going > today or task.date_coming_back < today %}
+                            <a href="{% url 'service_task_update' task.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                            <a href="{% url 'service_task_delete' task.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                            {% else %}
+                            <a href="{% url 'service_task_detail' task.pk %}" class="btn btn-sm btn-info">View Details</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p>No service tasks found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

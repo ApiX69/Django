@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="w-full mt-4 px-4">
+    <div class="card shadow p-4 rounded-4 animate__animated animate__fadeInDown">
+        <h2 class="mb-4 fw-bold">All Trip Reports</h2>
+        <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
+            <table class="table table-striped align-middle" style="table-layout: fixed; width: 100%;">
+                <thead class="table-light">
+                    <tr>
+                        <th>Trip Request</th>
+                        <th>Old Mileage</th>
+                        <th>New Mileage</th>
+                        <th>Issue Occurred</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in trip_reports %}
+                    <tr class="align-middle">
+                        <td class="px-3 py-2">{{ report.trip_request }}</td>
+                        <td class="px-3 py-2">{{ report.old_mileage }}</td>
+                        <td class="px-3 py-2">{{ report.new_mileage }}</td>
+                        <td class="px-3 py-2">{% if report.issue_occurred %}Yes{% else %}No{% endif %}</td>
+                        <td class="px-3 py-2">
+                            <a href="{% url 'trip_report_detail' report.pk %}" class="btn btn-primary btn-sm">View Details</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No trip reports found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

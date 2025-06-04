@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="w-full mt-4 px-4">
+    <div class="card shadow p-4 rounded-4 animate__animated animate__fadeInDown">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="mb-0 fw-bold">Manage Mission Requests</h2>
+            <a href="{% url 'trip_request_create' %}" class="btn btn-primary btn-lg animate__animated animate__pulse animate__infinite animate__slow">Add Mission Request</a>
+        </div>
+        <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
+            <table class="table table-striped align-middle" style="table-layout: fixed; width: 100%;">
+                <thead class="table-light">
+                    <tr>
+                        <th>User</th>
+                        <th>Mission</th>
+                        <th>Date Going</th>
+                        <th>Date Coming Back</th>
+                        <th>Motif</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in trip_requests %}
+                    {% if not request.vehicle %}
+                    <tr class="align-middle">
+                        <td class="px-3 py-2">{{ request.user.username }}</td>
+                        <td class="px-3 py-2">{{ request.mission }}</td>
+                        <td class="px-3 py-2">{{ request.date_going }}</td>
+                        <td class="px-3 py-2">{{ request.date_coming_back }}</td>
+                        <td class="px-3 py-2">{{ request.motif }}</td>
+                        <td class="px-3 py-2">
+                            {% if request.status == 'pending' %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            {% elif request.status == 'approved' %}
+                                <span class="badge bg-success">Approved</span>
+                            {% elif request.status == 'in_trip' %}
+                                <span class="badge bg-primary">In Trip</span>
+                            {% elif request.status == 'trip_ended' %}
+                                <span class="badge bg-secondary">Trip Ended</span>
+                            {% elif request.status == 'rejected' %}
+                                <span class="badge bg-danger">Rejected</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Unknown</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-3 py-2">
+                            {% if request.status == 'pending' %}
+                            <a href="{% url 'trip_request_approve' request.pk %}" class="btn btn-sm btn-success me-1">Approve</a>
+                            <a href="{% url 'trip_request_reject' request.pk %}" class="btn btn-sm btn-danger">Reject</a>
+                            {% else %}
+                            <span>-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">No mission requests found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

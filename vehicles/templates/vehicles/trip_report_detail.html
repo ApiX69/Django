@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Trip Report Details</h2>
+    <dl class="row">
+        <dt class="col-sm-3">Trip Request</dt>
+        <dd class="col-sm-9">{{ trip_report.trip_request }}</dd>
+
+        <dt class="col-sm-3">Old Mileage</dt>
+        <dd class="col-sm-9">{{ trip_report.old_mileage }}</dd>
+
+        <dt class="col-sm-3">New Mileage</dt>
+        <dd class="col-sm-9">{{ trip_report.new_mileage }}</dd>
+
+        <dt class="col-sm-3">Report Text</dt>
+        <dd class="col-sm-9">{{ trip_report.report_text }}</dd>
+
+        <dt class="col-sm-3">Fuel Filled</dt>
+        <dd class="col-sm-9">{{ trip_report.fuel_filled }}</dd>
+
+        <dt class="col-sm-3">Issue Occurred</dt>
+        <dd class="col-sm-9">{% if trip_report.issue_occurred %}Yes{% else %}No{% endif %}</dd>
+
+        {% if trip_report.issue_occurred %}
+        <dt class="col-sm-3">Issue Detail</dt>
+        <dd class="col-sm-9">{{ trip_report.issue_detail }}</dd>
+        {% endif %}
+    </dl>
+    <a href="{% url 'trip_report_list' %}" class="btn btn-secondary">Back to Reports</a>
+</div>
+{% endblock %}

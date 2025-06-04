@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="w-full mt-4 px-4">
+    <div class="card shadow p-4 rounded-4 animate__animated animate__fadeInDown">
+        <h2 class="mb-4 fw-bold">Fuel Types</h2>
+        <a href="{% url 'fuel_type_create' %}" class="btn btn-primary btn-lg mb-3 animate__animated animate__pulse animate__infinite animate__slow">Add New Fuel Type</a>
+        <div class="table-responsive">
+            <table class="table table-striped align-middle" style="table-layout: fixed; width: 100%;">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fuel_type in fuel_types %}
+                    <tr class="align-middle">
+                        <td class="px-3 py-2">{{ fuel_type.name }}</td>
+                        <td class="px-3 py-2">{{ fuel_type.quantity }}</td>
+                        <td class="px-3 py-2">
+                            <a href="{% url 'fuel_type_edit' fuel_type.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                            <a href="{% url 'fuel_type_delete' fuel_type.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">No fuel types found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

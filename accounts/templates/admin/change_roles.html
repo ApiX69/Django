@@ -1,0 +1,51 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<h1>Change User Roles</h1>
+
+<form method="post" action="">
+    {% csrf_token %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Current Role</th>
+                <th>Change Role</th>
+                <th>Department</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+                <td>
+                    <select name="role" form="role-form-{{ user.id }}">
+                        {% for key, value in roles.items %}
+                        <option value="{{ key }}" {% if user.role == key %}selected{% endif %}>{{ value }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>{{ user.department }}</td>
+                <td>
+                    <form id="role-form-{{ user.id }}" method="post" action="">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                        <select name="role" onchange="this.form.submit()">
+                            {% for key, value in roles.items %}
+                            <option value="{{ key }}" {% if user.role == key %}selected{% endif %}>{{ value }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+
+<a href="{% url 'admin:index' %}" class="button">Back to Admin Home</a>
+{% endblock %}

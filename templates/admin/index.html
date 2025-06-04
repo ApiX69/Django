@@ -1,0 +1,8 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+    {{ block.super }}
+    <div style="margin-top: 20px;">
+        <a href="{% url 'admin:change_roles' %}" class="button btn btn-primary">Change User Roles</a>
+    </div>
+{% endblock %}

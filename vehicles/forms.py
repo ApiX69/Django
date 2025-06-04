@@ -1,0 +1,116 @@
+from django import forms
+from .models import Vehicle, VehicleModel, Mission, TripRequest, FuelType, TripReport, Driver, ServiceTask, Service
+
+class DriverForm(forms.ModelForm):
+    class Meta:
+        model = Driver
+        fields = ['first_name', 'last_name', 'cin', 'status']
+
+class VehicleForm(forms.ModelForm):
+    class Meta:
+        model = Vehicle
+        exclude = ['status']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            existing_classes = field.widget.attrs.get('class', '')
+            classes = existing_classes + ' form-control'
+            field.widget.attrs['class'] = classes.strip()
+
+class VehicleModelForm(forms.ModelForm):
+    class Meta:
+        model = VehicleModel
+        fields = '__all__'
+
+class MissionForm(forms.ModelForm):
+    class Meta:
+        model = Mission
+        fields = '__all__'
+
+class TripRequestForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        mission = kwargs.pop('mission', None)
+        super().__init__(*args, **kwargs)
+        self.fields['vehicle'].queryset = Vehicle.objects.filter(status='free')
+        for field_name, field in self.fields.items():
+            existing_classes = field.widget.attrs.get('class', '')
+            classes = existing_classes + ' form-control'
+            field.widget.attrs['class'] = classes.strip()
+
+    class Meta:
+        model = TripRequest
+        exclude = ['user', 'status']
+        widgets = {
+            'date_going': forms.DateInput(attrs={'type': 'date'}),
+            'date_coming_back': forms.DateInput(attrs={'type': 'date'}),
+            'motif': forms.Textarea(attrs={'rows': 4}),
+        }
+        fields = ['mission', 'vehicle', 'date_going', 'date_coming_back', 'destination', 'motif']
+
+class FuelTypeForm(forms.ModelForm):
+    class Meta:
+        model = FuelType
+        fields = '__all__'
+
+class TripReportForm(forms.ModelForm):
+    class Meta:
+        model = TripReport
+        fields = ['report_text', 'new_mileage', 'issue_occurred', 'issue_detail']
+        widgets = {
+            'report_text': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'new_mileage': forms.NumberInput(attrs={'class': 'form-control'}),
+            'issue_occurred': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'issue_detail': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field.widget.attrs.get('class') is None:
+                field.widget.attrs['class'] = 'form-control'
+            elif 'form-control' not in field.widget.attrs['class']:
+                field.widget.attrs['class'] += ' form-control'
+
+class MissionApprovalForm(forms.ModelForm):
+    vehicle = forms.ModelChoiceField(queryset=Vehicle.objects.filter(status='free'), required=True)
+    fuel_consumed = forms.DecimalField(max_digits=6, decimal_places=2, required=True, help_text="Fuel to be consumed by the vehicle")
+
+    class Meta:
+        model = TripRequest
+        fields = ['vehicle']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+class ServiceTaskForm(forms.ModelForm):
+    class Meta:
+        model = ServiceTask
+        fields = ['vehicle', 'service', 'date_going', 'date_coming_back', 'destination', 'driver', 'fuel_used', 'motif']
+        widgets = {
+            'date_going': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'date_coming_back': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'destination': forms.TextInput(attrs={'class': 'form-control'}),
+            'fuel_used': forms.NumberInput(attrs={'class': 'form-control'}),
+            'motif': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field.widget.attrs.get('class') is None:
+                field.widget.attrs['class'] = 'form-control'
+            elif 'form-control' not in field.widget.attrs['class']:
+                field.widget.attrs['class'] += ' form-control'
+
+class ServiceForm(forms.ModelForm):
+    class Meta:
+        model = Service
+        fields = ['name']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            existing_classes = field.widget.attrs.get('class', '')
+            classes = existing_classes + ' form-control'
+            field.widget.attrs['class'] = classes.strip()
