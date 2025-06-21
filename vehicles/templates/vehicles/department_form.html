@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="w-full mt-4 px-4">
+    <div class="card shadow p-4 rounded-4 animate__animated animate__fadeInDown">
+        <h2 class="mb-4 fw-bold">{% if form.instance.pk %}Edit Department{% else %}Add New Department{% endif %}</h2>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.name.label_tag }}
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="text-danger">{{ form.name.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                {{ form.fuel_card.label_tag }}
+                {{ form.fuel_card }}
+                {% if form.fuel_card.errors %}
+                    <div class="text-danger">{{ form.fuel_card.errors }}</div>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{% url 'department_list' %}" class="btn btn-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

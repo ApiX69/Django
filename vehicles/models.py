@@ -18,11 +18,10 @@ class Vehicle(models.Model):
     license_plate = models.CharField(max_length=20, unique=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='free')
     horsepower = models.PositiveIntegerField(null=True, blank=True)
-    fuel_type = models.ForeignKey('FuelType', on_delete=models.SET_NULL, null=True, blank=True)
     mileage = models.PositiveIntegerField(null=True, blank=True)
     date_bought = models.DateField(null=True, blank=True)
-    # Removed mission_type field as per request
-    # mission_type = models.ForeignKey('Mission', on_delete=models.SET_NULL, null=True, blank=True)
+    fuel_card = models.ForeignKey('FuelCard', on_delete=models.SET_NULL, null=True, blank=True)
+    department = models.ForeignKey('Department', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f" {self.model} ({self.license_plate})"
@@ -77,9 +76,21 @@ class Driver(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.cin})"
 
-class FuelType(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+class FuelCard(models.Model):
+    id = models.CharField(max_length=50, primary_key=True)  # Manually set ID
+    balance = models.IntegerField(default=0)
+    TYPE_CHOICES = [
+        ('Primary', 'Primary'),
+        ('Secondary', 'Secondary'),
+    ]
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES)
+
+    def __str__(self):
+        return f"FuelCard {self.id} - {self.type}"
+
+class Department(models.Model):
+    name = models.CharField(max_length=100)
+    fuel_card = models.ForeignKey(FuelCard, on_delete=models.CASCADE, unique=True, limit_choices_to={'type': 'Primary'})
 
     def __str__(self):
         return self.name

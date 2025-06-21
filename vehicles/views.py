@@ -2,9 +2,89 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 from django.contrib import messages
-from .models import Vehicle, VehicleModel, Mission, TripRequest, FuelType, TripReport, Driver, ServiceTask, Service
+from .models import Vehicle, VehicleModel, Mission, TripRequest, FuelCard, TripReport, Driver, ServiceTask, Service, Department
 
-from .forms import VehicleForm, VehicleModelForm, MissionForm, TripRequestForm, FuelTypeForm, TripReportForm, DriverForm, ServiceTaskForm, ServiceForm
+from .forms import VehicleForm, VehicleModelForm, MissionForm, TripRequestForm, FuelCardForm, TripReportForm, DriverForm, ServiceTaskForm, ServiceForm, DepartmentForm
+
+@login_required
+@user_passes_test(lambda u: u.is_authenticated and u.role == 'manager')
+def department_list_view(request):
+    departments = Department.objects.all()
+    return render(request, 'vehicles/department_list.html', {'departments': departments})
+
+@login_required
+@user_passes_test(lambda u: u.is_authenticated and u.role == 'manager')
+def department_create_view(request):
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('department_list')
+    else:
+        form = DepartmentForm()
+    return render(request, 'vehicles/department_form.html', {'form': form})
+
+@login_required
+@user_passes_test(lambda u: u.is_authenticated and u.role == 'manager')
+def department_update_view(request, pk):
+    department = get_object_or_404(Department, pk=pk)
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST, instance=department)
+        if form.is_valid():
+            form.save()
+            return redirect('department_list')
+    else:
+        form = DepartmentForm(instance=department)
+    return render(request, 'vehicles/department_form.html', {'form': form})
+
+@login_required
+@user_passes_test(lambda u: u.is_authenticated and u.role == 'manager')
+def department_delete_view(request, pk):
+    department = get_object_or_404(Department, pk=pk)
+    if request.method == 'POST':
+        department.delete()
+        return redirect('department_list')
+    return render(request, 'vehicles/department_confirm_delete.html', {'department': department})
+
+@login_required
+@user_passes_test(lambda u: u.is_authenticated and u.role == 'manager')
+def fuel_card_list_view(request):
+    fuel_cards = FuelCard.objects.all()
+    return render(request, 'vehicles/fuel_card_list.html', {'fuel_cards': fuel_cards})
+
+@login_required
+@user_passes_test(lambda u: u.is_authenticated and u.role == 'manager')
+def fuel_card_create_view(request):
+    if request.method == 'POST':
+        form = FuelCardForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('fuel_card_list')
+    else:
+        form = FuelCardForm()
+    return render(request, 'vehicles/fuel_card_form.html', {'form': form})
+
+@login_required
+@user_passes_test(lambda u: u.is_authenticated and u.role == 'manager')
+def fuel_card_update_view(request, pk):
+    fuel_card = get_object_or_404(FuelCard, pk=pk)
+    if request.method == 'POST':
+        form = FuelCardForm(request.POST, instance=fuel_card)
+        if form.is_valid():
+            form.save()
+            return redirect('fuel_card_list')
+    else:
+        form = FuelCardForm(instance=fuel_card)
+    return render(request, 'vehicles/fuel_card_form.html', {'form': form})
+
+@login_required
+@user_passes_test(lambda u: u.is_authenticated and u.role == 'manager')
+def fuel_card_delete_view(request, pk):
+    fuel_card = get_object_or_404(FuelCard, pk=pk)
+    if request.method == 'POST':
+        fuel_card.delete()
+        return redirect('fuel_card_list')
+    return render(request, 'vehicles/fuel_card_confirm_delete.html', {'fuel_card': fuel_card})
 
 def is_employee(user):
     return user.is_authenticated and user.role == 'employee'
@@ -195,6 +275,7 @@ def vehicle_create_view(request):
             vehicle = form.save(commit=False)
             vehicle.status = 'free'
             vehicle.save()
+            form.save_m2m()
             return redirect('vehicle_list')
     else:
         form = VehicleForm()
@@ -278,9 +359,9 @@ def trip_request_employee_list_view(request):
 
 @login_required
 @user_passes_test(is_manager)
-def fuel_type_list_view(request):
-    fuel_types = FuelType.objects.all()
-    return render(request, 'vehicles/fuel_type_list.html', {'fuel_types': fuel_types})
+def fuel_card_list_view(request):
+    fuel_cards = FuelCard.objects.all()
+    return render(request, 'vehicles/fuel_card_list.html', {'fuel_cards': fuel_cards})
 
 from django.http import JsonResponse
 
@@ -464,34 +545,34 @@ def vehicle_model_delete_view(request, pk):
 
 @login_required
 @user_passes_test(is_manager)
-def fuel_type_create_view(request):
+def fuel_card_create_view(request):
     if request.method == 'POST':
-        form = FuelTypeForm(request.POST)
+        form = FuelCardForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('fuel_type_list')
+            return redirect('fuel_card_list')
     else:
-        form = FuelTypeForm()
-    return render(request, 'vehicles/fuel_type_form.html', {'form': form})
+        form = FuelCardForm()
+    return render(request, 'vehicles/fuel_card_form.html', {'form': form})
 
 @login_required
 @user_passes_test(is_manager)
-def fuel_type_update_view(request, pk):
-    fuel_type = get_object_or_404(FuelType, pk=pk)
+def fuel_card_update_view(request, pk):
+    fuel_card = get_object_or_404(FuelCard, pk=pk)
     if request.method == 'POST':
-        form = FuelTypeForm(request.POST, instance=fuel_type)
+        form = FuelCardForm(request.POST, instance=fuel_card)
         if form.is_valid():
             form.save()
-            return redirect('fuel_type_list')
+            return redirect('fuel_card_list')
     else:
-        form = FuelTypeForm(instance=fuel_type)
-    return render(request, 'vehicles/fuel_type_form.html', {'form': form})
+        form = FuelCardForm(instance=fuel_card)
+    return render(request, 'vehicles/fuel_card_form.html', {'form': form})
 
 @login_required
 @user_passes_test(is_manager)
-def fuel_type_delete_view(request, pk):
-    fuel_type = get_object_or_404(FuelType, pk=pk)
+def fuel_card_delete_view(request, pk):
+    fuel_card = get_object_or_404(FuelCard, pk=pk)
     if request.method == 'POST':
-        fuel_type.delete()
-        return redirect('fuel_type_list')
-    return render(request, 'vehicles/fuel_type_confirm_delete.html', {'fuel_type': fuel_type})
+        fuel_card.delete()
+        return redirect('fuel_card_list')
+    return render(request, 'vehicles/fuel_card_confirm_delete.html', {'fuel_card': fuel_card})

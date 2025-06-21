@@ -11,7 +11,7 @@ def signup_view(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.role = 'employee'  # default role
+            user.role = 'employee'  
             user.save()
             login(request, user)
             return redirect('home')
@@ -35,6 +35,8 @@ def home_view(request):
     available_vehicles_count = Vehicle.objects.filter(status='free').count()
     context = {
         'available_vehicles_count': available_vehicles_count,
+        'user_role': request.user.role,
+        'user_obj': request.user,
     }
     return render(request, 'accounts/home.html', context)
 

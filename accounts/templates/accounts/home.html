@@ -1,17 +1,19 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/role_badges.css' %}">
 <div class="card shadow-sm mt-3">
     <div class="card-body">
         <h2 class="card-title">Welcome, {{ request.user.username }}!</h2>
         <p>Your role: 
             <span class="badge 
-                {% if request.user.role == 'admin' %}role-badge-admin
-                {% elif request.user.role == 'manager' %}role-badge-manager
+                {% if user_obj.role == 'admin' %}role-badge-admin
+                {% elif user_obj.role == 'manager' %}role-badge-manager
                 {% else %}role-badge-employee
                 {% endif %}
             ">
-                {{ request.user.role|title }}
+                {{ user_obj.role|title }}
             </span>
         </p>
         <p>Your department: {{ request.user.department }}</p>

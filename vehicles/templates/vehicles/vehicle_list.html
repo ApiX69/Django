@@ -13,7 +13,8 @@
                         <th>Year</th>
                         <th>License Plate</th>
                         <th>Horsepower</th>
-                        <th>Fuel Type</th>
+                        <th>Fuel Card ID</th>
+                        <th>Department</th>
                         <th>Mileage</th>
                         <th>Date Bought</th>
                         <th>Status</th>
@@ -27,7 +28,8 @@
                         <td class="px-3 py-2">{{ vehicle.year }}</td>
                         <td class="px-3 py-2">{{ vehicle.license_plate }}</td>
                         <td class="px-3 py-2">{{ vehicle.horsepower }}</td>
-                        <td class="px-3 py-2">{{ vehicle.fuel_type }}</td>
+                        <td class="px-3 py-2">{% if vehicle.fuel_card %}{{ vehicle.fuel_card.id }}{% else %}{% endif %}</td>
+                        <td class="px-3 py-2">{% if vehicle.department %}{{ vehicle.department.name }}{% else %}{% endif %}</td>
                         <td class="px-3 py-2">{{ vehicle.mileage }}</td>
                         <td class="px-3 py-2">{{ vehicle.date_bought }}</td>
                         <td class="px-3 py-2">

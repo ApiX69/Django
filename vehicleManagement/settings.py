@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'fcm_django',
     'accounts',
     'vehicles',
 ]
@@ -117,6 +119,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 import os
+# Commented out firebase_admin import and initialization due to missing module
+# from firebase_admin import initialize_app, credentials
+
+# FIREBASE_APP = initialize_app()
+
+FCM_DJANGO_SETTINGS = {
+    "APP_VERBOSE_NAME": "FCM Django",
+    # Set to True to allow updating existing devices on duplicate registration IDs
+    "UPDATE_ON_DUPLICATE_REG_ID": True,
+    # Other optional settings:
+    # "FCM_MAX_RECIPIENTS": 1000, # Max recipients per bulk message (default is 1000)
+    # "DEFAULT_FIREBASE_APP": None, # Use this if you have multiple Firebase apps
+}
 
 STATIC_URL = 'static/'
 
@@ -124,6 +139,9 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
     os.path.join(BASE_DIR, 'custom_templates/assets'),
 ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

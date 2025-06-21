@@ -1,0 +1,23 @@
+.role-badge-admin {
+    background-color: #ef4444; /* red-500 */
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
+}
+
+.role-badge-manager {
+    background-color: #ffc400; /* blue-500 */
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
+}
+
+.role-badge-employee {
+    background-color: #32a3ff; /* green-500 */
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
+}
