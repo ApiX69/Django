@@ -1,13 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="w-full mt-4 px-4">
+<div class="container mt-4 px-3">
     <div class="card shadow p-4 rounded-4 animate__animated animate__fadeInDown">
-        <h2 class="mb-4 fw-bold">Fuel Cards List</h2>
-        <a href="{% url 'fuel_card_create' %}" class="btn btn-primary btn-lg mb-3 animate__animated animate__pulse animate__infinite animate__slow">Add New Fuel Card</a>
+        <h2 class="mb-4 fw-bold text-center text-primary">⛽ Fuel Cards List</h2>
+
+        <!-- Add Fuel Card Button -->
+        <div class="d-flex justify-content-end mb-3">
+            <a href="{% url 'fuel_card_create' %}" class="btn btn-lg btn-outline-primary rounded-3">
+                <i class="bi bi-plus-circle me-2"></i>Add New Fuel Card
+            </a>
+        </div>
+
+        <!-- Table -->
         <div class="table-responsive">
-            <table class="table table-striped align-middle" style="table-layout: fixed; width: 100%;">
-                <thead class="table-light">
+            <table class="table table-hover table-striped align-middle text-center" style="table-layout: fixed;">
+                <thead class="table-primary text-nowrap">
                     <tr>
                         <th>ID</th>
                         <th>Balance</th>
@@ -17,18 +25,22 @@
                 </thead>
                 <tbody>
                     {% for fuel_card in fuel_cards %}
-                    <tr class="align-middle">
-                        <td class="px-3 py-2">{{ fuel_card.id }}</td>
-                        <td class="px-3 py-2">{{ fuel_card.balance }}</td>
-                        <td class="px-3 py-2">{{ fuel_card.type }}</td>
-                        <td class="px-3 py-2">
-                            <a href="{% url 'fuel_card_edit' fuel_card.pk %}" class="btn btn-sm btn-warning">Edit</a>
-                            <a href="{% url 'fuel_card_delete' fuel_card.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                    <tr>
+                        <td class="fw-semibold">{{ fuel_card.id }}</td>
+                        <td>{{ fuel_card.balance }}</td>
+                        <td class="text-capitalize">{{ fuel_card.type }}</td>
+                        <td>
+                            <a href="{% url 'fuel_card_edit' fuel_card.pk %}" class="btn btn-sm btn-outline-warning me-1" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a href="{% url 'fuel_card_delete' fuel_card.pk %}" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this fuel card?');">
+                                <i class="bi bi-trash"></i>
+                            </a>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4" class="text-center">No fuel cards found.</td>
+                        <td colspan="4" class="text-center text-muted py-4 fs-5">No fuel cards found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

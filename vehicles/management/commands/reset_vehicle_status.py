@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from vehicles.models import Vehicle, TripRequest
+from vehicles.models import Vehicle, MissionOrder
 
 class Command(BaseCommand):
     help = 'Update trip request and vehicle statuses based on current date'
@@ -9,7 +9,7 @@ class Command(BaseCommand):
         today = timezone.now().date()
 
         # Update trip requests to in_trip if current date is between date_going and date_coming_back
-        in_trip_requests = TripRequest.objects.filter(
+        in_trip_requests = MissionOrder.objects.filter(
             status='approved',
             date_going__lte=today,
             date_coming_back__gte=today
@@ -18,13 +18,13 @@ class Command(BaseCommand):
             trip.status = 'in_trip'
             trip.save()
             vehicle = trip.vehicle
-            if vehicle.status != 'in_use':
+            if vehicle and vehicle.status != 'in_use':
                 vehicle.status = 'in_use'
                 vehicle.save()
-            self.stdout.write(f"TripRequest {trip.pk} set to in_trip; Vehicle {vehicle} set to in_use.")
+            self.stdout.write(f"MissionOrder {trip.pk} set to in_trip; Vehicle {vehicle} set to in_use.")
 
         # Update trip requests to trip_ended if current date is after date_coming_back
-        ended_trips = TripRequest.objects.filter(
+        ended_trips = MissionOrder.objects.filter(
             status__in=['approved', 'in_trip'],
             date_coming_back__lt=today
         )
@@ -33,7 +33,7 @@ class Command(BaseCommand):
             trip.save()
             vehicle = trip.vehicle
             # Check if vehicle has any other ongoing trips
-            ongoing_trips = TripRequest.objects.filter(
+            ongoing_trips = MissionOrder.objects.filter(
                 vehicle=vehicle,
                 status__in=['approved', 'in_trip'],
                 date_coming_back__gte=today
@@ -41,4 +41,4 @@ class Command(BaseCommand):
             if not ongoing_trips.exists():
                 vehicle.status = 'free'
                 vehicle.save()
-                self.stdout.write(f"TripRequest {trip.pk} set to trip_ended; Vehicle {vehicle} set to free.")
+            self.stdout.write(f"MissionOrder {trip.pk} set to trip_ended; Vehicle {vehicle} set to free.")

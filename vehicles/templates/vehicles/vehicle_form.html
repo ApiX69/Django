@@ -1,50 +1,68 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-4 px-3">
     <div class="card shadow p-4 rounded-4 animate__animated animate__fadeInDown" style="max-width: 700px; margin: auto;">
-        <h2 class="mb-4 text-center fw-bold">{% if form.instance.pk %}Edit Vehicle{% else %}Add Vehicle{% endif %}</h2>
+        <h2 class="mb-4 fw-bold text-center text-primary">
+            {% if form.instance.pk %}Edit Vehicle{% else %}Add Vehicle{% endif %}
+        </h2>
         <form method="post" novalidate>
             {% csrf_token %}
-            <div class="mb-3">
-                {{ form.model.label_tag }}
-                {{ form.model }}
+            <div class="row g-3">
+                <!-- Left Column -->
+                <div class="col-6">
+                    <div class="mb-3">
+                        {{ form.model.label_tag }}
+                        {{ form.model }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.year.label_tag }}
+                        {{ form.year }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.license_plate.label_tag }}
+                        {{ form.license_plate }}
+                    </div>
+                    <div class="mb-3">
+                        <div class="row g-2">
+                            <div class="col">
+                                {{ form.horsepower.label_tag }}
+                                {{ form.horsepower }}
+                            </div>
+                            {% if form.instance.pk %}
+                            <div class="col">
+                                {{ form.status.label_tag }}
+                                {{ form.status }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-6">
+                    <div class="mb-3">
+                        {{ form.fuel_card.label_tag }}
+                        {{ form.fuel_card }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.department.label_tag }}
+                        {{ form.department }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.mileage.label_tag }}
+                        {{ form.mileage }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.date_bought.label_tag }}
+                        {{ form.date_bought }}
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                {{ form.year.label_tag }}
-                {{ form.year }}
-            </div>
-            <div class="mb-3">
-                {{ form.license_plate.label_tag }}
-                {{ form.license_plate }}
-            </div>
-            {% if form.instance.pk %}
-            <div class="mb-3">
-                {{ form.status.label_tag }}
-                {{ form.status }}
-            </div>
-            {% endif %}
-            <div class="mb-3">
-                {{ form.horsepower.label_tag }}
-                {{ form.horsepower }}
-            </div>
-            <div class="mb-3">
-                {{ form.fuel_card.label_tag }}
-                {{ form.fuel_card }}
-            </div>
-            <div class="mb-3">
-                {{ form.department.label_tag }}
-                {{ form.department }}
-            </div>
-            <div class="mb-3">
-                {{ form.mileage.label_tag }}
-                {{ form.mileage }}
-            </div>
-            <div class="mb-3">
-                {{ form.date_bought.label_tag }}
-                {{ form.date_bought }}
-            </div>
-            <button type="submit" class="btn btn-primary w-100 btn-lg fw-semibold shadow-sm">Save</button>
+
+            <button type="submit" class="btn btn-primary w-100 btn-lg fw-semibold shadow-sm mt-3">
+                Save
+            </button>
         </form>
     </div>
 </div>

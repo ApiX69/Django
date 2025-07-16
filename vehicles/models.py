@@ -1,8 +1,16 @@
 from django.db import models
 from django.conf import settings
 
+REGION_CHOICES = (
+    ('Sfax', 'Sfax'),
+    ('Tunisia', 'Tunisia'),
+    ('Gabes', 'Gabes'),
+    ('Gafsa', 'Gafsa'),
+)
+
 class VehicleModel(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    region = models.CharField(max_length=20, choices=REGION_CHOICES, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -22,23 +30,26 @@ class Vehicle(models.Model):
     date_bought = models.DateField(null=True, blank=True)
     fuel_card = models.ForeignKey('FuelCard', on_delete=models.SET_NULL, null=True, blank=True)
     department = models.ForeignKey('Department', on_delete=models.SET_NULL, null=True, blank=True)
+    region = models.CharField(max_length=20, choices=REGION_CHOICES, blank=True, null=True)
 
     def __str__(self):
         return f" {self.model} ({self.license_plate})"
 
 class Mission(models.Model):
     mission_type = models.CharField(max_length=100)
+    region = models.CharField(max_length=20, choices=REGION_CHOICES, blank=True, null=True)
 
     def __str__(self):
         return self.mission_type
 
 class Service(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    region = models.CharField(max_length=20, choices=REGION_CHOICES, blank=True, null=True)
 
     def __str__(self):
         return self.name
 
-class TripRequest(models.Model):
+class MissionOrder(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('approved', 'Approved'),
@@ -57,10 +68,12 @@ class TripRequest(models.Model):
     destination = models.CharField(max_length=255, blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     fuel_used = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    file = models.FileField(upload_to='mission_files/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    region = models.CharField(max_length=20, choices=REGION_CHOICES, blank=True, null=True)
 
     def __str__(self):
-        return f"TripRequest by {self.user} for {self.vehicle} ({self.status})"
+        return f"MissionOrder by {self.user} for {self.vehicle} ({self.status})"
 
 class Driver(models.Model):
     STATUS_CHOICES = [
@@ -72,6 +85,7 @@ class Driver(models.Model):
     cin = models.CharField(max_length=20, unique=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
     date_added = models.DateField(auto_now_add=True)
+    region = models.CharField(max_length=20, choices=REGION_CHOICES, blank=True, null=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.cin})"
@@ -84,6 +98,7 @@ class FuelCard(models.Model):
         ('Secondary', 'Secondary'),
     ]
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
+    region = models.CharField(max_length=20, choices=REGION_CHOICES, blank=True, null=True)
 
     def __str__(self):
         return f"FuelCard {self.id} - {self.type}"
@@ -91,23 +106,34 @@ class FuelCard(models.Model):
 class Department(models.Model):
     name = models.CharField(max_length=100)
     fuel_card = models.ForeignKey(FuelCard, on_delete=models.CASCADE, unique=True, limit_choices_to={'type': 'Primary'})
+    region = models.CharField(max_length=20, choices=REGION_CHOICES, blank=True, null=True)
 
     def __str__(self):
         return self.name
 
 class TripReport(models.Model):
-    trip_request = models.OneToOneField('TripRequest', on_delete=models.CASCADE, related_name='report')
+    trip_request = models.OneToOneField('MissionOrder', on_delete=models.CASCADE, related_name='report')
     report_text = models.TextField()
     old_mileage = models.PositiveIntegerField(null=True, blank=True)
     new_mileage = models.PositiveIntegerField()
     fuel_filled = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
     issue_occurred = models.BooleanField(default=False)
     issue_detail = models.TextField(blank=True, null=True)
+    region = models.CharField(max_length=20, choices=REGION_CHOICES, blank=True, null=True)
 
     def __str__(self):
         return f"Report for {self.trip_request}"
 
-class ServiceTask(models.Model):
+class ServiceOrder(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('in_trip', 'In Trip'),
+        ('reported', 'Reported'),
+        ('trip_ended', 'Trip Ended'),
+        ('rejected', 'Rejected'),
+    ]
+
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE, null=True, blank=True)
     date_going = models.DateField()
@@ -116,6 +142,9 @@ class ServiceTask(models.Model):
     driver = models.ForeignKey(Driver, on_delete=models.CASCADE)
     fuel_used = models.DecimalField(max_digits=6, decimal_places=2)
     motif = models.TextField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    file = models.FileField(upload_to='service_order_files/', null=True, blank=True)
+    region = models.CharField(max_length=20, choices=REGION_CHOICES, blank=True, null=True)
 
     def __str__(self):
-        return f"ServiceTask for {self.vehicle} with {self.driver} ({self.date_going} to {self.date_coming_back})"
+        return f"ServiceOrder for {self.vehicle} with {self.driver} ({self.date_going} to {self.date_coming_back}) - Status: {self.status}"

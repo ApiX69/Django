@@ -30,15 +30,38 @@ def login_view(request):
         form = CustomAuthenticationForm()
     return render(request, 'accounts/login.html', {'form': form})
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import CustomUser
+from vehicles.models import Vehicle
+
 @login_required
 def home_view(request):
-    available_vehicles_count = Vehicle.objects.filter(status='free').count()
-    context = {
-        'available_vehicles_count': available_vehicles_count,
-        'user_role': request.user.role,
-        'user_obj': request.user,
-    }
-    return render(request, 'accounts/home.html', context)
+    user = request.user
+    if user.role == 'admin' or user.is_superuser:
+        admin_count = CustomUser.objects.filter(role='admin').count()
+        manager_count = CustomUser.objects.filter(role='manager').count()
+        employee_count = CustomUser.objects.filter(role='employee').count()
+        users = CustomUser.objects.all()
+        context = {
+            'admin_count': admin_count,
+            'manager_count': manager_count,
+            'employee_count': employee_count,
+            'users': users,
+        }
+        return render(request, 'accounts/admin_dashboard.html', context)
+    elif user.role == 'manager':
+        context = {
+            'user': user,
+        }
+        return render(request, 'accounts/manager_dashboard.html', context)
+    elif user.role == 'employee':
+        context = {
+            'user': user,
+        }
+        return render(request, 'accounts/employee_dashboard.html', context)
+    else:
+        return redirect('login')
 
 def logout_view(request):
     logout(request)

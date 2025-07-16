@@ -1,10 +1,30 @@
 from django import forms
-from .models import Vehicle, VehicleModel, Mission, TripRequest, FuelCard, TripReport, Driver, ServiceTask, Service, Department
+from .models import Vehicle, VehicleModel, Mission, MissionOrder, FuelCard, TripReport, Driver, ServiceOrder, Service, Department
 
 class DriverForm(forms.ModelForm):
     class Meta:
         model = Driver
         fields = ['first_name', 'last_name', 'cin', 'status']
+
+class MissionOrderManagerForm(forms.ModelForm):
+    class Meta:
+        model = MissionOrder
+        fields = ['user', 'vehicle', 'mission', 'date_going', 'date_coming_back', 'motif', 'destination', 'fuel_used', 'file']
+        widgets = {
+            'date_going': forms.DateInput(attrs={'type': 'date'}),
+            'date_coming_back': forms.DateInput(attrs={'type': 'date'}),
+            'motif': forms.Textarea(attrs={'rows': 4}),
+            'fuel_used': forms.NumberInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Optionally filter vehicles to those available or other logic
+        self.fields['vehicle'].queryset = Vehicle.objects.filter(status='free')
+        for field_name, field in self.fields.items():
+            existing_classes = field.widget.attrs.get('class', '')
+            classes = existing_classes + ' form-control'
+            field.widget.attrs['class'] = classes.strip()
 
 class VehicleForm(forms.ModelForm):
     class Meta:
@@ -25,6 +45,7 @@ class VehicleForm(forms.ModelForm):
             existing_classes = field.widget.attrs.get('class', '')
             classes = existing_classes + ' form-control'
             field.widget.attrs['class'] = classes.strip()
+    
 
 class VehicleModelForm(forms.ModelForm):
     class Meta:
@@ -47,14 +68,14 @@ class TripRequestForm(forms.ModelForm):
             field.widget.attrs['class'] = classes.strip()
 
     class Meta:
-        model = TripRequest
+        model = MissionOrder
         exclude = ['user', 'status']
         widgets = {
             'date_going': forms.DateInput(attrs={'type': 'date'}),
             'date_coming_back': forms.DateInput(attrs={'type': 'date'}),
             'motif': forms.Textarea(attrs={'rows': 4}),
         }
-        fields = ['mission', 'vehicle', 'date_going', 'date_coming_back', 'destination', 'motif']
+        fields = ['mission', 'vehicle', 'date_going', 'date_coming_back', 'destination', 'motif', 'file']
 
 class FuelCardForm(forms.ModelForm):
     TYPE_CHOICES = [
@@ -108,22 +129,24 @@ class MissionApprovalForm(forms.ModelForm):
     fuel_consumed = forms.DecimalField(max_digits=6, decimal_places=2, required=True, help_text="Fuel to be consumed by the vehicle")
 
     class Meta:
-        model = TripRequest
+        model = MissionOrder
         fields = ['vehicle']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-class ServiceTaskForm(forms.ModelForm):
+class ServiceOrderForm(forms.ModelForm):
     class Meta:
-        model = ServiceTask
-        fields = ['vehicle', 'service', 'date_going', 'date_coming_back', 'destination', 'driver', 'fuel_used', 'motif']
+        model = ServiceOrder
+        fields = ['vehicle', 'service', 'date_going', 'date_coming_back', 'destination', 'driver', 'fuel_used', 'motif', 'status', 'file']
         widgets = {
             'date_going': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'date_coming_back': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'destination': forms.TextInput(attrs={'class': 'form-control'}),
             'fuel_used': forms.NumberInput(attrs={'class': 'form-control'}),
             'motif': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):

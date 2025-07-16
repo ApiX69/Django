@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Create Mission Order</h2>
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="mb-3">
+            <label for="{{ form.user.id_for_label }}" class="form-label">User</label>
+            {{ form.user }}
+            {{ form.user.errors }}
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.vehicle.id_for_label }}" class="form-label">Vehicle</label>
+            {{ form.vehicle }}
+            {{ form.vehicle.errors }}
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.mission.id_for_label }}" class="form-label">Mission</label>
+            {{ form.mission }}
+            {{ form.mission.errors }}
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.date_going.id_for_label }}" class="form-label">Date Going</label>
+            {{ form.date_going }}
+            {{ form.date_going.errors }}
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.date_coming_back.id_for_label }}" class="form-label">Date Coming Back</label>
+            {{ form.date_coming_back }}
+            {{ form.date_coming_back.errors }}
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.motif.id_for_label }}" class="form-label">Motif</label>
+            {{ form.motif }}
+            {{ form.motif.errors }}
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.destination.id_for_label }}" class="form-label">Destination</label>
+            {{ form.destination }}
+            {{ form.destination.errors }}
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.fuel_used.id_for_label }}" class="form-label">Fuel Used</label>
+            {{ form.fuel_used }}
+            {{ form.fuel_used.errors }}
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.file.id_for_label }}" class="form-label">File</label>
+            {{ form.file }}
+            {{ form.file.errors }}
+        </div>
+        <button type="submit" class="btn btn-primary">Create Mission Order</button>
+        <a href="{% url 'trip_request_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

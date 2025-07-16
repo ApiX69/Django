@@ -4,12 +4,12 @@ from .models import CustomUser
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={"class": "form-control form-control-lg shadow-sm"}))
-    department = forms.CharField(max_length=100, required=True, widget=forms.TextInput(attrs={"class": "form-control form-control-lg shadow-sm"}))
+    region = forms.ChoiceField(choices=CustomUser.REGION_CHOICES, required=True, widget=forms.Select(attrs={"class": "form-control form-control-lg shadow-sm"}))
     cin = forms.CharField(max_length=20, required=True, widget=forms.TextInput(attrs={"class": "form-control form-control-lg shadow-sm"}))
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'department', 'cin', 'password1', 'password2')
+        fields = ('username', 'email', 'region', 'cin', 'password1', 'password2')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

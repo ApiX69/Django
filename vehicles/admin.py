@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import VehicleModel, Vehicle, Mission, Service, TripRequest, FuelCard, TripReport, Driver, ServiceTask
+from .models import VehicleModel, Vehicle, Mission, Service, MissionOrder, FuelCard, TripReport, Driver, ServiceOrder   
 
 @admin.register(VehicleModel)
 class VehicleModelAdmin(admin.ModelAdmin):
@@ -17,8 +17,8 @@ class MissionAdmin(admin.ModelAdmin):
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ('name',)
 
-@admin.register(TripRequest)
-class TripRequestAdmin(admin.ModelAdmin):
+@admin.register(MissionOrder)
+class MissionOrderAdmin(admin.ModelAdmin):
     list_display = ('user', 'vehicle', 'mission', 'date_going', 'date_coming_back', 'status')
 
 @admin.register(FuelCard)
@@ -33,6 +33,6 @@ class TripReportAdmin(admin.ModelAdmin):
 class DriverAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'cin', 'status', 'date_added')
 
-@admin.register(ServiceTask)
-class ServiceTaskAdmin(admin.ModelAdmin):
-    list_display = ('vehicle', 'service', 'date_going', 'date_coming_back', 'driver', 'fuel_used')
+@admin.register(ServiceOrder)
+class ServiceOrderAdmin(admin.ModelAdmin):
+    list_display = ('vehicle', 'service', 'date_going', 'date_coming_back', 'driver', 'fuel_used', 'status')

@@ -2,9 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 from django.contrib import messages
-from .models import Vehicle, VehicleModel, Mission, TripRequest, FuelCard, TripReport, Driver, ServiceTask, Service, Department
+from .models import Vehicle, VehicleModel, Mission, MissionOrder, FuelCard, TripReport, Driver, ServiceOrder, Service, Department
 
-from .forms import VehicleForm, VehicleModelForm, MissionForm, TripRequestForm, FuelCardForm, TripReportForm, DriverForm, ServiceTaskForm, ServiceForm, DepartmentForm
+from .forms import VehicleForm, VehicleModelForm, MissionForm, TripRequestForm, FuelCardForm, TripReportForm, DriverForm, ServiceOrderForm, ServiceForm, DepartmentForm, MissionOrderManagerForm
 
 @login_required
 @user_passes_test(lambda u: u.is_authenticated and u.role == 'manager')
@@ -108,62 +108,62 @@ def is_manager(user):
 
 @login_required
 @user_passes_test(is_manager)
-def service_task_create_view(request):
+def service_order_create_view(request):
     if request.method == 'POST':
-        form = ServiceTaskForm(request.POST)
+        form = ServiceOrderForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            messages.success(request, "Service task created successfully.")
-            return redirect('service_task_list')
+            messages.success(request, "Service order created successfully.")
+            return redirect('service_order_list')
     else:
-        form = ServiceTaskForm()
-    return render(request, 'vehicles/service_task_form.html', {'form': form})
+        form = ServiceOrderForm()
+    return render(request, 'vehicles/service_order_form.html', {'form': form})
 
 from django.utils import timezone
 
 @login_required
 @user_passes_test(is_manager)
-def service_task_list_view(request):
-    service_tasks = ServiceTask.objects.all()
-    return render(request, 'vehicles/service_task_list.html', {'service_tasks': service_tasks})
+def service_order_list_view(request):
+    service_orders = ServiceOrder.objects.all()
+    return render(request, 'vehicles/service_order_list.html', {'service_orders': service_orders})
 
 @login_required
 @user_passes_test(is_manager)
-def service_task_update_view(request, pk):
-    service_task = get_object_or_404(ServiceTask, pk=pk)
+def service_order_update_view(request, pk):
+    service_order = get_object_or_404(ServiceOrder, pk=pk)
     now = timezone.now().date()
-    if service_task.date_going <= now <= service_task.date_coming_back:
-        messages.error(request, "Cannot edit a service task during its duration.")
-        return redirect('service_task_list')
+    if service_order.date_going <= now <= service_order.date_coming_back:
+        messages.error(request, "Cannot edit a service order during its duration.")
+        return redirect('service_order_list')
     if request.method == 'POST':
-        form = ServiceTaskForm(request.POST, instance=service_task)
+        form = ServiceOrderForm(request.POST, request.FILES, instance=service_order)
         if form.is_valid():
             form.save()
-            messages.success(request, "Service task updated successfully.")
-            return redirect('service_task_list')
+            messages.success(request, "Service order updated successfully.")
+            return redirect('service_order_list')
     else:
-        form = ServiceTaskForm(instance=service_task)
-    return render(request, 'vehicles/service_task_form.html', {'form': form})
+        form = ServiceOrderForm(instance=service_order)
+    return render(request, 'vehicles/service_order_form.html', {'form': form})
 
 @login_required
 @user_passes_test(is_manager)
-def service_task_delete_view(request, pk):
-    service_task = get_object_or_404(ServiceTask, pk=pk)
+def service_order_delete_view(request, pk):
+    service_order = get_object_or_404(ServiceOrder, pk=pk)
     now = timezone.now().date()
-    if service_task.date_going <= now <= service_task.date_coming_back:
-        messages.error(request, "Cannot delete a service task during its duration.")
-        return redirect('service_task_list')
+    if service_order.date_going <= now <= service_order.date_coming_back:
+        messages.error(request, "Cannot delete a service order during its duration.")
+        return redirect('service_order_list')
     if request.method == 'POST':
-        service_task.delete()
-        messages.success(request, "Service task deleted successfully.")
-        return redirect('service_task_list')
-    return render(request, 'vehicles/service_task_confirm_delete.html', {'service_task': service_task})
+        service_order.delete()
+        messages.success(request, "Service order deleted successfully.")
+        return redirect('service_order_list')
+    return render(request, 'vehicles/service_order_confirm_delete.html', {'service_order': service_order})
 
 @login_required
 @user_passes_test(is_manager)
-def service_task_detail_view(request, pk):
-    service_task = get_object_or_404(ServiceTask, pk=pk)
-    return render(request, 'vehicles/service_task_detail.html', {'service_task': service_task})
+def service_order_detail_view(request, pk):
+    service_order = get_object_or_404(ServiceOrder, pk=pk)
+    return render(request, 'vehicles/service_order_detail.html', {'service_order': service_order})
 
 @login_required
 @user_passes_test(is_manager)
@@ -309,10 +309,11 @@ def vehicle_delete_view(request, pk):
         return redirect('vehicle_list')
     return render(request, 'vehicles/vehicle_confirm_delete.html', {'vehicle': vehicle})
 
+
 @login_required
 @user_passes_test(is_employee)
 def trip_report_create_view(request, trip_request_id):
-    trip_request = get_object_or_404(TripRequest, pk=trip_request_id, user=request.user)
+    trip_request = get_object_or_404(MissionOrder, pk=trip_request_id, user=request.user)
     vehicle = trip_request.vehicle
     if request.method == 'POST':
         form = TripReportForm(request.POST)
@@ -343,7 +344,7 @@ def trip_report_create_view(request, trip_request_id):
 @login_required
 @user_passes_test(is_employee)
 def trip_request_delete_view(request, pk):
-    trip_request = get_object_or_404(TripRequest, pk=pk, user=request.user)
+    trip_request = get_object_or_404(MissionOrder, pk=pk, user=request.user)
     if trip_request.status != 'pending':
         return redirect('trip_request_employee_list')
     if request.method == 'POST':
@@ -354,7 +355,7 @@ def trip_request_delete_view(request, pk):
 @login_required
 @user_passes_test(is_employee)
 def trip_request_employee_list_view(request):
-    trip_requests = TripRequest.objects.filter(user=request.user)
+    trip_requests = MissionOrder.objects.filter(user=request.user)
     return render(request, 'vehicles/trip_request_employee_list.html', {'trip_requests': trip_requests})
 
 @login_required
@@ -381,7 +382,7 @@ def trip_request_create_view(request):
         mission = None
         if mission_id:
             mission = get_object_or_404(Mission, pk=mission_id)
-        form = TripRequestForm(request.POST, mission=mission)
+        form = TripRequestForm(request.POST, request.FILES, mission=mission)
         if form.is_valid():
             trip_request = form.save(commit=False)
             trip_request.user = request.user
@@ -401,7 +402,7 @@ def trip_request_create_view(request):
 @login_required
 @user_passes_test(is_manager)
 def trip_request_list_view(request):
-    trip_requests = TripRequest.objects.all()
+    trip_requests = MissionOrder.objects.all()
     return render(request, 'vehicles/trip_request_list.html', {'trip_requests': trip_requests})
 
 from .forms import MissionApprovalForm
@@ -415,22 +416,26 @@ def trip_request_approve_view(request, pk):
 @login_required
 @user_passes_test(is_manager)
 def trip_request_approval_view(request, pk):
-    trip_request = get_object_or_404(TripRequest, pk=pk)
+    trip_request = get_object_or_404(MissionOrder, pk=pk)
     if request.method == 'POST':
         form = MissionApprovalForm(request.POST, instance=trip_request)
         if form.is_valid():
             trip_request = form.save(commit=False)
             trip_request.status = 'approved'
             # Save fuel consumed to fuel_used field
-            fuel_consumed = form.cleaned_data.get('fuel_consumed')
-            trip_request.fuel_used = fuel_consumed
+            fuel_used = form.cleaned_data.get('fuel_consumed')
+            trip_request.fuel_used = fuel_used
             trip_request.save()
-            # Deduct fuel consumed from the vehicle's fuel type quantity
             vehicle = trip_request.vehicle
-            if vehicle and vehicle.fuel_type and fuel_consumed:
-                fuel_type = vehicle.fuel_type
-                fuel_type.quantity = max(fuel_type.quantity - fuel_consumed, 0)
-                fuel_type.save()
+            if vehicle and vehicle.department and vehicle.department.fuel_card and vehicle.fuel_card and fuel_used:
+                department_fuel_card = vehicle.department.fuel_card
+                vehicle_fuel_card = vehicle.fuel_card
+                # Deduct fuel_used from department fuel card balance
+                department_fuel_card.balance = max(department_fuel_card.balance - fuel_used, 0)
+                department_fuel_card.save()
+                # Add fuel_used to vehicle fuel card balance
+                vehicle_fuel_card.balance += fuel_used
+                vehicle_fuel_card.save()
             return redirect('trip_request_list')
     else:
         form = MissionApprovalForm(instance=trip_request)
@@ -439,7 +444,7 @@ def trip_request_approval_view(request, pk):
 @login_required
 @user_passes_test(is_manager)
 def trip_request_reject_view(request, pk):
-    trip_request = get_object_or_404(TripRequest, pk=pk)
+    trip_request = get_object_or_404(MissionOrder, pk=pk)
     trip_request.status = 'rejected'
     trip_request.save()
     return redirect('trip_request_list')
@@ -447,7 +452,7 @@ def trip_request_reject_view(request, pk):
 @login_required
 @user_passes_test(is_employee)
 def trip_request_edit_view(request, pk):
-    trip_request = get_object_or_404(TripRequest, pk=pk, user=request.user)
+    trip_request = get_object_or_404(MissionOrder, pk=pk, user=request.user)
     if request.method == 'POST':
         form = TripRequestForm(request.POST, instance=trip_request)
         if form.is_valid():
@@ -460,7 +465,7 @@ def trip_request_edit_view(request, pk):
 @login_required
 @user_passes_test(is_manager)
 def trip_request_log_view(request):
-    trip_requests = TripRequest.objects.all()
+    trip_requests = MissionOrder.objects.all()
     return render(request, 'vehicles/trip_request_log.html', {'trip_requests': trip_requests})
 
 @login_required
@@ -480,6 +485,31 @@ def mission_add_view(request):
     else:
         form = MissionForm()
     return render(request, 'vehicles/mission_form.html', {'form': form})
+
+@login_required
+@user_passes_test(is_manager)
+def mission_order_create_view(request):
+    if request.method == 'POST':
+        form = MissionOrderManagerForm(request.POST, request.FILES)
+        if form.is_valid():
+            mission_order = form.save(commit=False)
+            mission_order.status = 'approved'
+            mission_order.save()
+            fuel_used = mission_order.fuel_used
+            vehicle = mission_order.vehicle
+            if vehicle and vehicle.department and vehicle.department.fuel_card and vehicle.fuel_card and fuel_used:
+                department_fuel_card = vehicle.department.fuel_card
+                vehicle_fuel_card = vehicle.fuel_card
+                # Deduct fuel_used from department fuel card balance
+                department_fuel_card.balance = max(department_fuel_card.balance - fuel_used, 0)
+                department_fuel_card.save()
+                # Add fuel_used to vehicle fuel card balance
+                vehicle_fuel_card.balance += fuel_used
+                vehicle_fuel_card.save()
+            return redirect('trip_request_list')
+    else:
+        form = MissionOrderManagerForm()
+    return render(request, 'vehicles/mission_order_form.html', {'form': form})
 
 @login_required
 @user_passes_test(is_manager)

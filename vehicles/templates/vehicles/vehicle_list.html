@@ -1,21 +1,50 @@
- {% extends "base.html" %}
+{% extends "base.html" %}
 
 {% block content %}
-<div class="w-full mt-4 px-4">
+<div class="container mt-4 px-3">
     <div class="card shadow p-4 rounded-4 animate__animated animate__fadeInDown">
-        <h2 class="mb-4 fw-bold">Vehicle List</h2>
-        <a href="{% url 'vehicle_add' %}" class="btn btn-primary btn-lg mb-3 animate__animated animate__pulse animate__infinite animate__slow">Add Vehicle</a>
+        <h2 class="mb-4 fw-bold text-center text-primary">🚗 Vehicle List</h2>
+
+       
+        
+        <!-- Add Vehicle Button -->
+        <div class="d-flex justify-content-end mb-3">
+            <a href="{% url 'vehicle_add' %}" class="btn btn-lg btn-outline-primary rounded-3">
+                <i class="bi bi-plus-circle me-2"></i>Add Vehicle
+            </a>
+        </div>
+         <!-- Search Bar with Category -->
+<div class="row g-3 align-items-center mb-4">
+            <div class="col-auto">
+                <select id="searchCategory" class="form-select">
+                    <option value="0">Model</option>
+                    <option value="1">Year</option>
+                    <option value="2">License Plate</option>
+                    <option value="3">Horsepower</option>
+                    <option value="4">Fuel Card</option>
+                    <option value="5">Department</option>
+                    <option value="6">Mileage</option>
+                    <option value="7">Date Bought</option>
+                    <option value="8">Status</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+            </div>
+        </div>
+
+        <!-- Table -->
         <div class="table-responsive">
-            <table class="table table-striped align-middle" style="table-layout: fixed; width: 100%;">
-                <thead class="table-light">
+            <table class="table table-hover table-striped align-middle text-center" style="table-layout: fixed;">
+                <thead class="table-primary text-nowrap">
                     <tr>
                         <th>Model</th>
                         <th>Year</th>
                         <th>License Plate</th>
                         <th>Horsepower</th>
-                        <th>Fuel Card ID</th>
+                        <th>Fuel Card</th>
                         <th>Department</th>
-                        <th>Mileage</th>
+                        <th>Mileage (km)</th>
                         <th>Date Bought</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -23,32 +52,36 @@
                 </thead>
                 <tbody>
                     {% for vehicle in vehicles %}
-                    <tr class="align-middle">
-                        <td class="px-3 py-2">{{ vehicle.model }}</td>
-                        <td class="px-3 py-2">{{ vehicle.year }}</td>
-                        <td class="px-3 py-2">{{ vehicle.license_plate }}</td>
-                        <td class="px-3 py-2">{{ vehicle.horsepower }}</td>
-                        <td class="px-3 py-2">{% if vehicle.fuel_card %}{{ vehicle.fuel_card.id }}{% else %}{% endif %}</td>
-                        <td class="px-3 py-2">{% if vehicle.department %}{{ vehicle.department.name }}{% else %}{% endif %}</td>
-                        <td class="px-3 py-2">{{ vehicle.mileage }}</td>
-                        <td class="px-3 py-2">{{ vehicle.date_bought }}</td>
-                        <td class="px-3 py-2">
+                    <tr>
+                        <td class="text-truncate" title="{{ vehicle.model }}">{{ vehicle.model|default:"—" }}</td>
+                        <td>{{ vehicle.year|default:"—" }}</td>
+                        <td>{{ vehicle.license_plate|default:"—" }}</td>
+                        <td>{{ vehicle.horsepower|default:"—" }}</td>
+                        <td>{{ vehicle.fuel_card.id|default:"—" }}</td>
+                        <td>{{ vehicle.department.name|default:"—" }}</td>
+                        <td>{{ vehicle.mileage|default:"—" }}</td>
+                        <td>{{ vehicle.date_bought|date:"M d, Y" }}</td>
+                        <td>
                             {% if vehicle.status == 'free' %}
-                                <span class="badge bg-success">Free</span>
+                                <span class="badge bg-success px-3 py-2 rounded-pill">Free</span>
                             {% elif vehicle.status == 'in_use' %}
-                                <span class="badge bg-danger">In Use</span>
+                                <span class="badge bg-danger px-3 py-2 rounded-pill">In Use</span>
                             {% else %}
-                                <span class="badge bg-secondary">Unknown</span>
+                                <span class="badge bg-secondary px-3 py-2 rounded-pill">Unknown</span>
                             {% endif %}
                         </td>
-                        <td class="px-3 py-2">
-                            <a href="{% url 'vehicle_edit' vehicle.pk %}" class="btn btn-sm btn-warning me-1">Edit</a>
-                            <a href="{% url 'vehicle_delete' vehicle.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                        <td>
+                            <a href="{% url 'vehicle_edit' vehicle.pk %}" class="btn btn-sm btn-outline-warning me-1" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a href="{% url 'vehicle_delete' vehicle.pk %}" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this vehicle?');">
+                                <i class="bi bi-trash"></i>
+                            </a>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="9" class="text-center">No vehicles found.</td>
+                        <td colspan="10" class="text-center text-muted py-4 fs-5">No vehicles found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -56,4 +89,26 @@
         </div>
     </div>
 </div>
+
+<!-- JavaScript for Filtering -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("searchInput");
+    const searchCategory = document.getElementById("searchCategory");
+
+    searchInput.addEventListener("keyup", function () {
+        const filter = searchInput.value.toLowerCase();
+        const categoryIndex = parseInt(searchCategory.value);
+        const rows = document.querySelectorAll("table tbody tr");
+
+        rows.forEach(row => {
+            const cell = row.cells[categoryIndex];
+            if (cell) {
+                const text = cell.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? "" : "none";
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

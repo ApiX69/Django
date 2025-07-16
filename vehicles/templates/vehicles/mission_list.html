@@ -3,13 +3,21 @@
 {% block title %}Mission List{% endblock %}
 
 {% block content %}
-<div class="w-full mt-4 px-4">
+<div class="container mt-4 px-3">
     <div class="card shadow p-4 rounded-4 animate__animated animate__fadeInDown">
-        <h2 class="mb-4 fw-bold">Mission List</h2>
-        <a href="{% url 'mission_add' %}" class="btn btn-primary btn-lg mb-3 animate__animated animate__pulse animate__infinite animate__slow">Add Mission</a>
+        <h2 class="mb-4 fw-bold text-center text-primary">🎯 Mission List</h2>
+
+        <!-- Add Mission Button -->
+        <div class="d-flex justify-content-end mb-3">
+            <a href="{% url 'mission_add' %}" class="btn btn-lg btn-outline-primary rounded-3">
+                <i class="bi bi-plus-circle me-2"></i>Add Mission
+            </a>
+        </div>
+
+        <!-- Table -->
         <div class="table-responsive">
-            <table class="table table-striped align-middle">
-                <thead class="table-light">
+            <table class="table table-hover table-striped align-middle text-center" style="table-layout: fixed;">
+                <thead class="table-primary text-nowrap">
                     <tr>
                         <th>Mission Type</th>
                         <th>Actions</th>
@@ -17,16 +25,20 @@
                 </thead>
                 <tbody>
                     {% for mission in missions %}
-                    <tr class="align-middle">
-                        <td>{{ mission.mission_type }}</td>
+                    <tr>
+                        <td class="text-truncate">{{ mission.mission_type|default:"—" }}</td>
                         <td>
-                            <a href="{% url 'mission_edit' mission.pk %}" class="btn btn-sm btn-warning">Edit</a>
-                            <a href="{% url 'mission_delete' mission.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                            <a href="{% url 'mission_edit' mission.pk %}" class="btn btn-sm btn-outline-warning me-1" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a href="{% url 'mission_delete' mission.pk %}" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this mission?');">
+                                <i class="bi bi-trash"></i>
+                            </a>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="2" class="text-center">No missions available.</td>
+                        <td colspan="2" class="text-center text-muted py-4 fs-5">No missions available.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

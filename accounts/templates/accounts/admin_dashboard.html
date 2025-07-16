@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<div class="container py-4">
+    <h1 class="mb-4 fw-bold text-primary">Admin Dashboard</h1>
+
+    <!-- Role Filter Buttons -->
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a href="#" class="btn btn-dark role-filter active px-4 py-2 rounded-pill" data-role="all">All</a>
+        <a href="#" class="btn btn-danger role-filter px-4 py-2 rounded-pill" data-role="admin">Admins: {{ admin_count }}</a>
+        <a href="#" class="btn btn-warning role-filter px-4 py-2 rounded-pill text-dark" data-role="manager">Managers: {{ manager_count }}</a>
+        <a href="#" class="btn btn-primary role-filter px-4 py-2 rounded-pill" data-role="employee">Employees: {{ employee_count }}</a>
+    </div>
+
+    <!-- Search + Sort Toolbar -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <input type="text" id="search-input" placeholder="Search by name, email, or department" class="form-control form-control-sm w-100 w-md-50" />
+        <button id="toggle-sort" class="btn btn-outline-primary btn-sm" title="Sort A-Z">
+            <i class="bi bi-sort-alpha-down"></i>
+        </button>
+    </div>
+
+    <!-- User Table -->
+    <div class="table-responsive shadow-sm rounded-3">
+        <table class="table table-bordered table-hover align-middle mb-0" id="users-table">
+            <thead class="table-light">
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Department</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr data-role="{{ user.role }}">
+                    <td class="username">{{ user.username }}</td>
+                    <td class="email">{{ user.email }}</td>
+                    <td class="{% if user.role == 'admin' %}text-danger{% elif user.role == 'manager' %}text-warning{% elif user.role == 'employee' %}text-primary{% endif %} fw-semibold">
+                        {{ user.get_role_display }}
+                    </td>
+                    <td class="department">{{ user.department }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center text-muted">No users found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- JS Filtering + Sorting -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const filters = document.querySelectorAll('.role-filter');
+    const rows = document.querySelectorAll('#users-table tbody tr');
+    const searchInput = document.getElementById('search-input');
+    const toggleSortBtn = document.getElementById('toggle-sort');
+    let ascending = true;
+
+    filters.forEach(filter => {
+        filter.addEventListener('click', function (e) {
+            e.preventDefault();
+            filters.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+
+            const role = this.getAttribute('data-role');
+
+            rows.forEach(row => {
+                if (role === 'all' || row.getAttribute('data-role') === role) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            applySearchFilter();
+        });
+    });
+
+    searchInput.addEventListener('input', applySearchFilter);
+
+    function applySearchFilter() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const activeRole = document.querySelector('.role-filter.active')?.getAttribute('data-role');
+
+        rows.forEach(row => {
+            const matchesRole = activeRole === 'all' || row.getAttribute('data-role') === activeRole;
+            const username = row.querySelector('.username').textContent.toLowerCase();
+            const email = row.querySelector('.email').textContent.toLowerCase();
+            const department = row.querySelector('.department').textContent.toLowerCase();
+            const matchesSearch = username.includes(searchTerm) || email.includes(searchTerm) || department.includes(searchTerm);
+
+            row.style.display = (matchesRole && matchesSearch) ? '' : 'none';
+        });
+    }
+
+    toggleSortBtn.addEventListener('click', function () {
+        const tbody = document.querySelector('#users-table tbody');
+        const rowList = Array.from(tbody.querySelectorAll('tr'));
+
+        rowList.sort((a, b) => {
+            const aText = a.querySelector('.username').textContent.toLowerCase();
+            const bText = b.querySelector('.username').textContent.toLowerCase();
+            return ascending ? aText.localeCompare(bText) : bText.localeCompare(aText);
+        });
+
+        rowList.forEach(row => tbody.appendChild(row));
+        ascending = !ascending;
+
+        this.innerHTML = ascending
+            ? '<i class="bi bi-sort-alpha-down"></i>'
+            : '<i class="bi bi-sort-alpha-up"></i>';
+    });
+});
+</script>
+{% endblock %}
